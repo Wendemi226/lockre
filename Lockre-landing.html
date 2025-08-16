@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lockré - Gérez vos ventes facilement, même hors connexion</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Swiper.js CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <!-- Framer Motion CDN (web) -->
+  <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="icon" href="https://raw.githubusercontent.com/Wendemi226/Lockr-v0/main/src/app/app/favicon.ico" type="image/x-icon">
+  <style>
+      /* Animation continue de flottement vertical sur les screenshots */
+      .magic-img {
+        animation: floatDown 1.2s cubic-bezier(.4,0,.2,1) both, floatMagic 3.2s ease-in-out infinite alternate;
+      }
+      @keyframes floatMagic {
+        0% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(18px) scale(1.04); box-shadow: 0 32px 64px 0 rgba(37,99,235,0.32), 0 2px 24px 0 rgba(37,99,235,0.18); }
+        100% { transform: translateY(-12px) scale(0.98); }
+      }
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-color);
+      font-family: 'Inter', 'Montserrat', Arial, sans-serif;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --bg-gradient: linear-gradient(135deg, #18181b 0%, #22223b 100%);
+      --text-color: #f3f4f6;
+      --card-bg: #18181b;
+      --card-shadow: 0 2px 16px rgba(37,99,235,0.10);
+      --card-shadow-hover: 0 8px 32px rgba(37,99,235,0.18);
+      --btn-bg: #2563eb;
+      --btn-bg-hover: #1e40af;
+      --btn-text: #fff;
+      --icon-color: #2563eb;
+      --footer-color: #94a3b8;
+    }
+    .light-mode {
+      --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+      --text-color: #1e293b;
+      --card-bg: #fff;
+      --card-shadow: 0 2px 16px rgba(37,99,235,0.10);
+      --card-shadow-hover: 0 8px 32px rgba(37,99,235,0.18);
+      --btn-bg: #2563eb;
+      --btn-bg-hover: #1e40af;
+      --btn-text: #fff;
+      --icon-color: #2563eb;
+      --footer-color: #2563eb;
+    }
+    .fade-in {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s cubic-bezier(.4,0,.2,1), transform 0.8s cubic-bezier(.4,0,.2,1);
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: none;
+    }
+    .slide-up {
+      opacity: 0;
+      transform: translateY(60px);
+      transition: opacity 0.9s cubic-bezier(.4,0,.2,1), transform 0.9s cubic-bezier(.4,0,.2,1);
+    }
+    .slide-up.visible {
+      opacity: 1;
+      transform: none;
+    }
+    .whatsapp-btn {
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 24px var(--btn-bg);
+      padding: 0.9rem 2.2rem;
+      transition: background 0.2s, transform 0.2s;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+    .whatsapp-btn:hover {
+      background: var(--btn-bg-hover);
+      transform: scale(1.07);
+    }
+    .card-anim {
+      background: var(--card-bg);
+      transition: box-shadow 0.2s, transform 0.2s;
+      box-shadow: var(--card-shadow);
+    }
+    .card-anim:hover {
+      transform: scale(1.04) translateY(-4px);
+      box-shadow: var(--card-shadow-hover);
+    }
+    .icon-anim {
+      stroke: var(--icon-color);
+      transition: stroke 0.2s;
+    }
+    .swiper {
+      width: 100%;
+      max-width: 480px;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px var(--btn-bg);
+      margin: 0 auto;
+      background: var(--card-bg);
+    }
+    .swiper-slide img {
+      width: 100%;
+      border-radius: 1.5rem;
+      object-fit: cover;
+      min-height: 220px;
+      max-height: 340px;
+    }
+    .footer {
+      color: var(--footer-color);
+    }
+    @media (max-width: 700px) {
+      .swiper { max-width: 98vw; }
+      .swiper-slide img { min-height: 160px; max-height: 220px; }
+    }
+    .theme-toggle {
+      position: fixed;
+      top: 1.2rem;
+      right: 1.2rem;
+      z-index: 50;
+      background: var(--card-bg);
+      color: var(--icon-color);
+      border-radius: 999px;
+      box-shadow: 0 2px 8px var(--btn-bg);
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-size: 1.1rem;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .theme-toggle:hover {
+      background: var(--btn-bg);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Page -->
+  <div id="loadingPage" style="position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:var(--bg-gradient);display:flex;align-items:center;justify-content:center;transition:opacity 0.7s;">
+    <img src="docs/logo.png" alt="Lockré Logo" style="width:160px;height:160px;border-radius:50%;box-shadow:0 8px 32px var(--btn-bg);animation:logoPulse 1.2s infinite alternate;" />
+  </div>
+  <style>
+    @keyframes logoPulse {
+      0% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.12) rotate(-8deg); }
+      100% { transform: scale(1.05) rotate(8deg); }
+    }
+  </style>
+  <button class="theme-toggle" id="themeToggle" title="Changer le mode">
+    <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:none"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+    <span id="themeLabel">Mode clair</span>
+  </button>
+  <!-- Header -->
+  <header class="flex flex-col items-center justify-center text-center py-16 px-4 fade-in" id="header" style="display:none;">
+    <div class="mb-6">
+      <img src="docs/logo.png" alt="Lockré Logo" class="w-40 h-40 rounded-full shadow-lg mx-auto animate-bounce" style="max-width:180px;max-height:180px;" />
+    </div>
+    <h1 class="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight text-white" style="font-family:Montserrat,Inter,sans-serif;">Gérez vos ventes facilement !<br class="md:hidden"/> </h1>
+    <button class="whatsapp-btn mt-4" onclick="window.open('https://wa.me/22654358747','_blank')">
+      <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path fill="#fff" d="M17.472 14.382c-.297-.149-1.758-.867-2.028-.967-.272-.099-.47-.148-.669.15-.198.297-.767.967-.94 1.166-.173.198-.347.223-.644.075-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.149-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51-.173-.008-.372-.01-.571-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.099 3.2 5.077 4.363.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path fill="#2563eb" d="M12.004 2.003c-5.522 0-9.997 4.475-9.997 9.997 0 1.762.464 3.488 1.345 4.997l-1.427 5.217a1.001 1.001 0 0 0 1.237 1.237l5.217-1.427a9.96 9.96 0 0 0 4.997 1.345c5.522 0 9.997-4.475 9.997-9.997s-4.475-9.997-9.997-9.997zm0 18.001a8.01 8.01 0 0 1-4.254-1.236.999.999 0 0 0-.747-.116l-4.233 1.158 1.158-4.233a1 1 0 0 0-.116-.747A8.01 8.01 0 0 1 4.003 12c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8z"/></svg>
+      Contactez-nous sur WhatsApp
+    </button>
+  </header>
+  <!-- Avantages -->
+  <section class="max-w-4xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-6 fade-in" id="benefits">
+    <div class="card-anim rounded-2xl p-6 flex flex-col items-center text-center shadow-lg" style="min-height:220px;">
+      <div class="mb-3"><svg width="36" height="36" class="icon-anim" fill="none" viewBox="0 0 24 24"><path d="M7 7h10M7 11h10M7 15h6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <h3 class="text-lg font-bold mb-2" style="color:var(--text-color)">Multi-vendeurs</h3>
+      <p style="color:var(--footer-color)">Gérez plusieurs vendeurs et collaborateurs sur une seule plateforme.</p>
+    </div>
+    <div class="card-anim rounded-2xl p-6 flex flex-col items-center text-center shadow-lg" style="min-height:220px;">
+      <div class="mb-3"><svg width="36" height="36" class="icon-anim" fill="none" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" stroke-width="2"/><path d="M16 3v4M8 3v4" stroke-width="2"/></svg></div>
+      <h3 class="text-lg font-bold mb-2" style="color:var(--text-color)">Gestion des stocks</h3>
+      <p style="color:var(--footer-color)">Suivi précis des entrées, sorties et niveaux de stock.</p>
+    </div>
+    <div class="card-anim rounded-2xl p-6 flex flex-col items-center text-center shadow-lg" style="min-height:220px;">
+      <div class="mb-3"><svg width="36" height="36" class="icon-anim" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke-width="2"/><path d="M8 8h8v8H8z" stroke-width="2"/></svg></div>
+      <h3 class="text-lg font-bold mb-2" style="color:var(--text-color)">Factures professionnelles</h3>
+      <p style="color:var(--footer-color)">Générez des factures PDF élégantes et prêtes à imprimer.</p>
+    </div>
+  </section>
+  <!-- Carrousel Screenshots -->
+  <section class="max-w-2xl mx-auto px-4 py-8 fade-in" id="screenshots">
+    <div class="mb-4 text-center text-xl font-bold text-white">Aperçu du logiciel</div>
+    <div class="flex flex-col md:flex-row items-center justify-center gap-8 magic-screenshots">
+      <div class="screenshot-anim">
+        <img src="docs/lockre1.png" alt="Screenshot 1" class="magic-img" />
+      </div>
+      <div class="screenshot-anim" style="animation-delay:0.2s;">
+        <img src="docs/lockre2.png" alt="Screenshot 2" class="magic-img" />
+      </div>
+      <div class="screenshot-anim" style="animation-delay:0.4s;">
+        <img src="docs/lockre3.png" alt="Screenshot 3" class="magic-img" />
+      </div>
+    </div>
+    <style>
+      .magic-screenshots {
+        margin-top: 2rem;
+      }
+      .magic-img {
+        width: 320px;
+        max-width: 90vw;
+        border-radius: 1.5rem;
+        box-shadow: 0 24px 48px 0 rgba(37,99,235,0.25), 0 2px 24px 0 rgba(37,99,235,0.12), 0 0px 0px 8px rgba(255,255,255,0.08);
+        background: #fff;
+        object-fit: cover;
+        min-height: 180px;
+        max-height: 340px;
+        border: 2px solid #e0e7ff;
+        animation: floatDown 1.2s cubic-bezier(.4,0,.2,1) both;
+      }
+      .screenshot-anim {
+        animation: floatDown 1.2s cubic-bezier(.4,0,.2,1) both;
+      }
+      @keyframes floatDown {
+        0% { opacity: 0; transform: translateY(-60px) scale(0.96); box-shadow: 0 0px 0px 0 rgba(37,99,235,0.0); }
+        60% { opacity: 1; transform: translateY(10px) scale(1.04); box-shadow: 0 32px 64px 0 rgba(37,99,235,0.32), 0 2px 24px 0 rgba(37,99,235,0.18); }
+        100% { opacity: 1; transform: translateY(0) scale(1); box-shadow: 0 24px 48px 0 rgba(37,99,235,0.25), 0 2px 24px 0 rgba(37,99,235,0.12), 0 0px 0px 8px rgba(255,255,255,0.08); }
+      }
+      @media (max-width: 900px) {
+        .magic-img { width: 98vw; min-height: 120px; max-height: 180px; }
+        .magic-screenshots { flex-direction: column; gap: 2rem; }
+      }
+    </style>
+  </section>
+  <!-- Footer -->
+  <footer class="w-full text-center py-6 text-gray-400 text-sm fade-in" id="footer">
+  <div>Contact WhatsApp&nbsp;: <a href="https://wa.me/22654358747" class="font-bold" style="color:var(--btn-bg)">+226 54 35 87 47</a></div>
+  <div class="mt-2">&copy; 2025 Lockré. Tous droits réservés.</div>
+  </footer>
+  <script>
+    // Fade-in/slide-up on scroll
+    function revealOnScroll() {
+      document.querySelectorAll('.fade-in').forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 60) {
+          el.classList.add('visible');
+        }
+      });
+    }
+    window.addEventListener('scroll', revealOnScroll);
+    window.addEventListener('DOMContentLoaded', revealOnScroll);
+    // Swiper.js init
+    window.addEventListener('DOMContentLoaded', function() {
+      // Light/Dark mode toggle
+      const themeToggle = document.getElementById('themeToggle');
+      const iconSun = document.getElementById('iconSun');
+      const iconMoon = document.getElementById('iconMoon');
+      const themeLabel = document.getElementById('themeLabel');
+      function setTheme(light) {
+        if(light) {
+          document.body.classList.add('light-mode');
+          iconSun.style.display = 'none';
+          iconMoon.style.display = '';
+          themeLabel.textContent = 'Mode sombre';
+        } else {
+          document.body.classList.remove('light-mode');
+          iconSun.style.display = '';
+          iconMoon.style.display = 'none';
+          themeLabel.textContent = 'Mode clair';
+        }
+      }
+      let isLight = false;
+      themeToggle.addEventListener('click', function() {
+        isLight = !isLight;
+        setTheme(isLight);
+      });
+      setTheme(isLight);
+      // Loading page animation
+      setTimeout(function() {
+        document.getElementById('loadingPage').style.opacity = 0;
+        setTimeout(function() {
+          document.getElementById('loadingPage').style.display = 'none';
+          document.getElementById('header').style.display = '';
+        }, 700);
+      }, 1800);
+    });
+  </script>
+</body>
+</html>
